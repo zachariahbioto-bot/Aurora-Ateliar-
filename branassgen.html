@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Brand Asset Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FDFBF7;
+            color: #4a4a4a;
+        }
+        h1, h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+        }
+        .container {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 2rem;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #E5E7EB;
+            transition: all 0.2s;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #BF9553;
+            box-shadow: 0 0 0 2px rgba(191, 149, 83, 0.2);
+        }
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            border: 2px dashed #BF9553;
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #BF9553;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .brand-gradient-text {
+            background: linear-gradient(90deg, #522888, #BF9553);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        #imageCanvas {
+            border: 1px solid #BF9553;
+            border-radius: 1rem;
+        }
+        .tool-button {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        .tool-button.active {
+            background-color: #BF9553;
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1 class="text-4xl text-center brand-gradient-text mb-2">Brand Asset Generator</h1>
+            <p class="text-center text-gray-600 mb-8">Generate high-quality brand graphics for print-on-demand.</p>
+
+            <form id="generatorForm">
+                <div class="input-group">
+                    <label for="creativePrompt">Creative Prompt</label>
+                    <textarea id="creativePrompt" rows="4" placeholder="Describe the specific image you want to create. The brand's Art Deco style and colors are automatically applied. E.g., 'A minimalist sunburst icon.'" required></textarea>
+                </div>
+                <div class="text-center">
+                    <button type="submit" id="generateButton" class="w-full sm:w-auto bg-[#522888] hover:bg-[#754D9D] text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Generate Image
+                    </button>
+                </div>
+            </form>
+
+            <div id="results" class="mt-8">
+                <div id="loadingIndicator" class="hidden loading-container">
+                    <div class="loading-spinner"></div>
+                    <p class="text-gray-500">Generating your brand asset...</p>
+                </div>
+                <div id="placeholder" class="loading-container text-gray-400">
+                    <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p class="mt-2 text-sm font-medium">Your generated image will appear here.</p>
+                </div>
+
+                <!-- New Editing Toolkit Section -->
+                <div id="editingToolkit" class="hidden flex flex-col items-center mt-8">
+                    <h2 class="text-2xl text-center brand-gradient-text mb-4">Editing Toolkit</h2>
+                    <div class="flex items-center space-x-4 mb-4">
+                        <button id="drawTool" class="tool-button bg-[#E5E7EB] text-[#4a4a4a] hover:bg-gray-300 active">Draw</button>
+                        <button id="eraseTool" class="tool-button bg-[#E5E7EB] text-[#4a4a4a] hover:bg-gray-300">Erase</button>
+                        <button id="cutTool" class="tool-button bg-[#E5E7EB] text-[#4a4a4a] hover:bg-gray-300">Cut</button>
+                        <label for="colorPicker" class="text-gray-600">Color:</label>
+                        <input type="color" id="colorPicker" value="#522888">
+                        <label for="brushSize" class="text-gray-600">Size:</label>
+                        <input type="range" id="brushSize" min="1" max="50" value="10">
+                    </div>
+                    <canvas id="imageCanvas" class="w-full h-auto rounded-lg shadow-md mb-4"></canvas>
+                    <a id="downloadLink" class="bg-white border-2 border-[#522888] text-[#522888] font-bold py-2 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                        Download Edited Image
+                    </a>
+                </div>
+
+                <div id="errorMessage" class="text-center text-red-500 mt-4 hidden">
+                    <p>An error occurred. Please try again.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('generatorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const creativePrompt = document.getElementById('creativePrompt').value;
+            const generateButton = document.getElementById('generateButton');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const placeholder = document.getElementById('placeholder');
+            const editingToolkit = document.getElementById('editingToolkit');
+            const imageCanvas = document.getElementById('imageCanvas');
+            const ctx = imageCanvas.getContext('2d', { willReadFrequently: true });
+            const downloadLink = document.getElementById('downloadLink');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Show loading state
+            placeholder.classList.add('hidden');
+            editingToolkit.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+            generateButton.disabled = true;
+            generateButton.textContent = 'Generating...';
+
+            // Define the brand's style and colors
+            const brandStylePrompt = "An elegant Art Deco style logo/icon with geometric patterns. Use a color palette of deep purple (#522888), gold (#BF9553), and warm cream (#FDFBF7). The image must be a standalone graphic with a transparent background.";
+
+            // Construct the final prompt for the AI by combining the brand style and the user's specific request
+            const combinedPrompt = `${brandStylePrompt} The user's request is to create an image described as: ${creativePrompt}`;
+            
+            // Your API key has been inserted here
+            const apiKey = "AIzaSyDhAPt8VUMAYkkYH9Rq-fpN7orOvvo23o8";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${apiKey}`;
+
+            let attempts = 0;
+            const maxAttempts = 5;
+            const retryDelay = 1000;
+            let success = false;
+
+            try {
+                while (attempts < maxAttempts && !success) {
+                    try {
+                        const payload = {
+                            contents: [{
+                                parts: [{ text: combinedPrompt }]
+                            }],
+                            generationConfig: {
+                                responseModalities: ['TEXT', 'IMAGE']
+                            }
+                        };
+                        
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(`API Error: ${errorData.error.message}`);
+                        }
+
+                        const result = await response.json();
+                        
+                        const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                        if (base64Data) {
+                            const imageUrl = `data:image/png;base64,${base64Data}`;
+                            
+                            // Load image onto the canvas
+                            const img = new Image();
+                            img.onload = () => {
+                                imageCanvas.width = img.width;
+                                imageCanvas.height = img.height;
+                                ctx.drawImage(img, 0, 0);
+                                loadingIndicator.classList.add('hidden');
+                                editingToolkit.classList.remove('hidden');
+
+                                // Update download link to use the canvas
+                                updateDownloadLink();
+                            };
+                            img.src = imageUrl;
+                            
+                            success = true;
+                        } else {
+                            throw new Error("Invalid response format from API.");
+                        }
+                    } catch (error) {
+                        console.error(`API call failed, attempt: ${attempts + 1}`, error);
+                        attempts++;
+                        if (attempts < maxAttempts) {
+                            await new Promise(res => setTimeout(res, retryDelay * Math.pow(2, attempts)));
+                        } else {
+                            throw new Error(`Failed to generate image after multiple attempts. ${error.message}`);
+                        }
+                    }
+                }
+            } catch (error) {
+                loadingIndicator.classList.add('hidden');
+                errorMessage.textContent = `Error: ${error.message}. Please check your API key and try again.`;
+                errorMessage.classList.remove('hidden');
+                placeholder.classList.remove('hidden');
+            } finally {
+                generateButton.disabled = false;
+                generateButton.textContent = 'Generate Image';
+            }
+        });
+
+        // ===================================
+        // CANVAS EDITING LOGIC
+        // ===================================
+        const imageCanvas = document.getElementById('imageCanvas');
+        const ctx = imageCanvas.getContext('2d', { willReadFrequently: true });
+        const drawTool = document.getElementById('drawTool');
+        const eraseTool = document.getElementById('eraseTool');
+        const cutTool = document.getElementById('cutTool');
+        const colorPicker = document.getElementById('colorPicker');
+        const brushSizeInput = document.getElementById('brushSize');
+        const downloadLink = document.getElementById('downloadLink');
+
+        let isDrawing = false;
+        let isCutting = false;
+        let currentTool = 'draw';
+        let startX, startY;
+
+        // Tool button handlers
+        function deactivateAllTools() {
+            [drawTool, eraseTool, cutTool].forEach(btn => btn.classList.remove('active'));
+        }
+
+        drawTool.addEventListener('click', () => {
+            deactivateAllTools();
+            currentTool = 'draw';
+            drawTool.classList.add('active');
+            imageCanvas.style.cursor = 'crosshair';
+        });
+
+        eraseTool.addEventListener('click', () => {
+            deactivateAllTools();
+            currentTool = 'erase';
+            eraseTool.classList.add('active');
+            imageCanvas.style.cursor = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' class=\'feather feather-eraser\'%3E%3Cpath d=\'M14 2h-4a2 2 0 0 0-2 2v2H6a2 2 0 0 0-2 2v4h16V8a2 2 0 0 0-2-2h-2V4a2 2 0 0 0-2-2zm-6 4h8v12H8V6zm10 0v12h-4V6h4z\'/%3E%3C/svg%3E") 12 12, auto';
+        });
+
+        cutTool.addEventListener('click', () => {
+            deactivateAllTools();
+            currentTool = 'cut';
+            cutTool.classList.add('active');
+            imageCanvas.style.cursor = 'crosshair';
+        });
+
+        function updateDownloadLink() {
+            const editedImageUrl = imageCanvas.toDataURL('image/png');
+            downloadLink.href = editedImageUrl;
+            downloadLink.download = `edited-brand-asset.png`;
+        }
+
+        let savedCanvasState;
+
+        // Mouse event handlers for all tools
+        imageCanvas.addEventListener('mousedown', (e) => {
+            const rect = imageCanvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (imageCanvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (imageCanvas.height / rect.height);
+            
+            if (currentTool === 'draw' || currentTool === 'erase') {
+                isDrawing = true;
+                ctx.beginPath();
+                draw(e);
+            } else if (currentTool === 'cut') {
+                isCutting = true;
+                startX = x;
+                startY = y;
+                // Save the current canvas state before drawing the selection rectangle
+                savedCanvasState = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
+            }
+        });
+
+        imageCanvas.addEventListener('mousemove', (e) => {
+            const rect = imageCanvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (imageCanvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (imageCanvas.height / rect.height);
+            
+            if (isDrawing) {
+                draw(e);
+            } else if (isCutting) {
+                // Restore the canvas to its state before we started drawing the rectangle
+                ctx.putImageData(savedCanvasState, 0, 0);
+
+                const width = x - startX;
+                const height = y - startY;
+
+                // Draw a semi-transparent overlay
+                ctx.fillStyle = 'rgba(191, 149, 83, 0.3)';
+                ctx.fillRect(0, 0, imageCanvas.width, imageCanvas.height);
+
+                // Clear the selection rectangle area to show the original image
+                ctx.clearRect(startX, startY, width, height);
+
+                // Draw the outline
+                ctx.strokeStyle = '#BF9553';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(startX, startY, width, height);
+            }
+        });
+
+        imageCanvas.addEventListener('mouseup', (e) => {
+            if (isDrawing) {
+                isDrawing = false;
+                ctx.closePath();
+                updateDownloadLink();
+            } else if (isCutting) {
+                isCutting = false;
+                
+                const rect = imageCanvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (imageCanvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (imageCanvas.height / rect.height);
+                
+                const cropX = Math.min(startX, x);
+                const cropY = Math.min(startY, y);
+                const cropWidth = Math.abs(x - startX);
+                const cropHeight = Math.abs(y - startY);
+
+                if (cropWidth > 0 && cropHeight > 0) {
+                    const originalImageData = ctx.getImageData(cropX, cropY, cropWidth, cropHeight);
+                    
+                    // Resize the canvas to the new dimensions
+                    imageCanvas.width = cropWidth;
+                    imageCanvas.height = cropHeight;
+                    
+                    // Put the cropped image data onto the new canvas
+                    ctx.putImageData(originalImageData, 0, 0);
+                    
+                    updateDownloadLink();
+                } else {
+                    // If no valid selection was made, restore the original canvas state
+                    ctx.putImageData(savedCanvasState, 0, 0);
+                }
+            }
+        });
+        
+        imageCanvas.addEventListener('mouseleave', () => {
+            isDrawing = false;
+            isCutting = false;
+            ctx.closePath();
+            // Restore canvas state if a cut was in progress
+            if (savedCanvasState) {
+                ctx.putImageData(savedCanvasState, 0, 0);
+                savedCanvasState = null;
+            }
+            updateDownloadLink();
+        });
+
+        function draw(e) {
+            const rect = imageCanvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (imageCanvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (imageCanvas.height / rect.height);
+            
+            ctx.lineWidth = brushSizeInput.value;
+            ctx.lineCap = 'round';
+            
+            if (currentTool === 'draw') {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.strokeStyle = colorPicker.value;
+            } else if (currentTool === 'erase') {
+                ctx.globalCompositeOperation = 'destination-out';
+            }
+            
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+    </script>
+</body>
+</html>

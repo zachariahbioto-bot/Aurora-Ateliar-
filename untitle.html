@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: AURORA ATELIER Banner Strategy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Gold and Purple Accents -->
+    <!-- Application Structure Plan: A single-page application with a fixed sidebar navigation for seamless scrolling between thematic sections. This structure allows users to easily jump to specific parts of the report (Brand Identity, Banner Concept, Technical Specs, etc.) or flow through the narrative logically. The design prioritizes readability and visual elegance, mirroring the Art Deco theme of the report itself. Key data points are highlighted in cards for quick scanning, and a dynamic chart visualizes the application of design principles, making complex information more digestible. -->
+    <!-- Visualization & Content Choices: Report Info: Table 3 (Art Deco Design Elements) -> Goal: Compare/Organize -> Viz/Presentation: Interactive Doughnut Chart -> Interaction: Hover to see details on each design element -> Justification: A doughnut chart effectively shows how different Art Deco principles contribute to the whole design concept, making it more engaging than a static table. Report Info: Table 1 (Banner Specs) & Table 2 (Optimization Checklist) -> Goal: Inform -> Viz/Presentation: Styled HTML tables/cards -> Interaction: None -> Justification: Tables and cards are the clearest way to present technical specifications and checklists for easy reference and readability. All other textual content is presented in styled paragraphs with clear headings. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FDFBF7;
+            color: #4a4a4a;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #BF9553;
+            border-left-color: #BF9553;
+            transform: translateX(5px);
+        }
+        .brand-gradient-text {
+            background: linear-gradient(90deg, #522888, #BF9553);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 450px;
+            max-height: 80vh;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 sticky top-0 h-screen bg-white shadow-lg p-6 hidden lg:flex flex-col">
+            <h1 class="text-2xl font-bold mb-2 brand-gradient-text">AURORA ATELIER</h1>
+            <h2 class="text-sm font-light text-gray-500 mb-8">Banner Strategy Report</h2>
+            <nav id="desktop-nav" class="flex flex-col space-y-2">
+                <a href="#introduction" class="nav-link p-2 pl-4">Introduction</a>
+                <a href="#brand-identity" class="nav-link p-2 pl-4">Brand Identity</a>
+                <a href="#banner-concept" class="nav-link p-2 pl-4">Banner Concept</a>
+                <a href="#technical-specs" class="nav-link p-2 pl-4">Technical Specs</a>
+                <a href="#recommendations" class="nav-link p-2 pl-4">Recommendations</a>
+                <a href="#generator" class="nav-link p-2 pl-4">Banner Generator</a>
+            </nav>
+            <div class="mt-auto text-xs text-center text-gray-400">
+                <p>Interactive Report</p>
+                <p>&copy; 2024 AURORA ATELIER</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 sm:p-8 md:p-12 bg-[#FDFBF7]">
+            <div class="max-w-4xl mx-auto">
+
+                <!-- Introduction Section -->
+                <section id="introduction" class="mb-16">
+                    <h2 class="text-4xl md:text-5xl mb-4 text-gray-800">Strategic Banner Design</h2>
+                    <p class="text-lg text-gray-600 mb-6">This interactive report outlines a comprehensive strategy for designing a high-impact web banner for "AURORA ATELIER," aligning with the brand's sophisticated Art Deco identity. The goal is to visually extend the elegance of the logo, creating a compelling, text-free visual narrative while ensuring optimal web performance.</p>
+                    <div class="w-full h-1 bg-gradient-to-r from-[#522888] to-[#BF9553] rounded-full"></div>
+                </section>
+
+                <!-- Brand Identity Section -->
+                <section id="brand-identity" class="mb-16">
+                    <h3 class="text-3xl md:text-4xl mb-6 text-gray-800">Deconstructing the Brand Identity</h3>
+                    <p class="text-base text-gray-600 mb-8">Understanding the foundational elements of the "AURORA ATELIER" brand is paramount. The brand is a synthesis of a strong visual language rooted in Art Deco and a name rich with semantic meaning, combining celestial wonder with bespoke craftsmanship.</p>
+
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="card p-6">
+                            <h4 class="text-2xl mb-3 text-[#522888]">Visual Language: Art Deco</h4>
+                            <p class="text-gray-600">The logo is a quintessential example of contemporary Art Deco, marked by symmetry, geometric precision, and an opulent color scheme. It evokes architectural grandeur and the modern sensibility of the "Machine Age," clearly distinct from the organic lines of Art Nouveau.</p>
+                        </div>
+                        <div class="card p-6">
+                            <h4 class="text-2xl mb-3 text-[#BF9553]">Semantic Resonance</h4>
+                            <p class="text-gray-600">"Aurora" signifies dawn, light, and new beginnings, while "Atelier" implies a workshop of high-end craftsmanship and artistic mastery. Together, they define a brand of refined innovation and bespoke quality.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Banner Concept Section -->
+                <section id="banner-concept" class="mb-16">
+                    <h3 class="text-3xl md:text-4xl mb-6 text-gray-800">A Visual Narrative of Dawn & Craft</h3>
+                     <p class="text-base text-gray-600 mb-8">This section translates the brand identity into a concrete visual concept for the web banner. The design will serve as a direct extension of the logo, amplifying the Art Deco aesthetic through geometric patterns, luminous gradients, and subtle symbolic motifs without relying on text.</p>
+                    
+                    <div class="flex flex-col lg:flex-row items-center gap-8">
+                        <div class="lg:w-1/2">
+                            <h4 class="text-2xl mb-4 text-gray-700">Art Deco Elements in Action</h4>
+                            <p class="text-gray-600 mb-4">The banner's design is a carefully orchestrated application of core Art Deco principles. Each element, from the color palette to the symmetrical composition, is chosen to reinforce the brand's message of luxury, modernity, and craftsmanship. This chart visualizes how these principles come together to form a cohesive and impactful design.</p>
+                            <p class="text-gray-600">Hover over the chart segments to see how each characteristic is specifically applied in the proposed banner design.</p>
+                        </div>
+                        <div class="lg:w-1/2 w-full">
+                            <div class="chart-container">
+                                <canvas id="artDecoChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Technical Specs Section -->
+                <section id="technical-specs" class="mb-16">
+                    <h3 class="text-3xl md:text-4xl mb-6 text-gray-800">Technical Implementation & Optimization</h3>
+                    <p class="text-base text-gray-600 mb-8">Balancing aesthetic beauty with technical performance is critical. This section provides the key specifications to ensure the banner is not only visually stunning but also fast-loading and accessible across all devices.</p>
+
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <div class="card p-6">
+                            <h4 class="text-2xl mb-3 text-gray-700">Proposed Specifications</h4>
+                            <ul class="space-y-3 text-gray-600">
+                                <li><strong class="text-[#522888]">Dimensions:</strong> 1920x600px</li>
+                                <li><strong class="text-[#522888]">Format:</strong> PNG (for crispness)</li>
+                                <li><strong class="text-[#522888]">File Size:</strong> &lt; 500 KB</li>
+                                <li><strong class="text-[#522888]">Alt Text:</strong> Descriptive & SEO-friendly</li>
+                            </ul>
+                        </div>
+                        <div class="card p-6">
+                            <h4 class="text-2xl mb-3 text-gray-700">Optimization Checklist</h4>
+                             <ul class="space-y-3 text-gray-600">
+                                <li>✓ Choose Appropriate File Format</li>
+                                <li>✓ Compress Image Files</li>
+                                <li>✓ Use Correct Dimensions</li>
+                                <li>✓ Add Descriptive Alt Text</li>
+                                <li>✓ Test Across Devices</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recommendations Section -->
+                <section id="recommendations" class="mb-16">
+                    <h3 class="text-3xl md:text-4xl mb-6 text-gray-800">Holistic Brand Cohesion</h4>
+                    <p class="text-base text-gray-600 mb-8">To solidify the "AURORA ATELIER" brand, the distinctive Art Deco aesthetic should permeate all customer touchpoints, creating a seamless and immersive experience. The following recommendations support long-term brand equity and consistency.</p>
+                    <div class="space-y-6">
+                        <div class="card p-6">
+                            <h4 class="text-2xl mb-3 text-gray-700">Extend the Aesthetic</h4>
+                            <p class="text-gray-600">Apply the core Art Deco principles to all digital and physical materials: social media graphics, email templates, website elements, and even in-store decor. This creates a unified and memorable brand world.</p>
+                        </div>
+                        <div class="card p-6">
+                            <h4 class="text-2xl mb-3 text-gray-700">Develop a Brand Style Guide</h4>
+                            <p class="text-gray-600">Create a comprehensive document outlining the approved color palette, typography, pattern usage, and general style guidelines. This empowers all teams to maintain a consistent visual language.</p>
+                        </div>
+                         <div class="card p-6">
+                            <h4 class="text-2xl mb-3 text-gray-700">Monitor and Test</h4>
+                            <p class="text-gray-600">Continuously monitor the banner's performance (load times, engagement) and consider A/B testing subtle variations in the future. This data-driven approach ensures sustained effectiveness.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- New Generator Section -->
+                <section id="generator" class="mb-16">
+                    <h3 class="text-3xl md:text-4xl mb-6 text-gray-800">Experience the Generator</h3>
+                    <p class="text-base text-gray-600 mb-8">Ready to bring the Art Deco banner concept to life? Use our interactive generator to create a custom banner for your website based on the strategy outlined in this report.</p>
+                    <div class="text-center">
+                        <a href="Bangen.html" class="inline-block bg-[#522888] hover:bg-[#754D9D] text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">Launch Banner Generator</a>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Chart.js implementation
+            const ctx = document.getElementById('artDecoChart').getContext('2d');
+            const artDecoChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        'Geometric Shapes', 
+                        'Rich Colors', 
+                        'Sleek/Streamlined Forms', 
+                        'Symmetry', 
+                        'Sunburst Motifs', 
+                        'Decorative Accents'
+                    ],
+                    datasets: [{
+                        label: 'Art Deco Elements',
+                        data: [20, 20, 15, 15, 15, 15],
+                        backgroundColor: [
+                            '#522888',
+                            '#754D9D',
+                            '#BF9553',
+                            '#B97F24',
+                            '#D6D5C9',
+                            '#A9A9A9'
+                        ],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 3,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#4a4a4a',
+                                font: {
+                                    family: "'Poppins', sans-serif"
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#333',
+                            titleFont: {
+                                family: "'Cormorant Garamond', serif",
+                                size: 16,
+                            },
+                            bodyFont: {
+                                family: "'Poppins', sans-serif",
+                                size: 12
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const tooltips = {
+                                        'Geometric Shapes': 'Stepped arches and radiating lines.',
+                                        'Rich Colors': 'Deep purple-to-gold gradients.',
+                                        'Sleek/Streamlined Forms': 'Clean, precise lines and smooth transitions.',
+                                        'Symmetry': 'Centralized and balanced composition.',
+                                        'Sunburst Motifs': 'Ethereal sunburst in gold/amber tones.',
+                                        'Decorative Accents': 'Abstracted curves and layering for depth.'
+                                    };
+                                    label += tooltips[context.label] || '';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Active nav link scrolling
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            // Smooth scrolling for nav links
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
