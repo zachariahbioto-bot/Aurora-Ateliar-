@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website vs. Marketplace: Selling Your Digital Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: The SPA is designed as a guided narrative. It starts with a hero section summarizing the core thesis. The central interactive element is a toggleable comparison table (Marketplace vs. Own Site) for a quick overview. Below this, six thematic sections, matching the report's core arguments (Brand, Finance, Marketing, etc.), are presented in a grid. Clicking on a theme reveals a detailed view with contextual text and an interactive chart, allowing users to deep-dive into specific areas of interest. This non-linear, hub-and-spoke model prioritizes user-led exploration over a rigid, linear report structure, making the complex information more digestible and engaging. -->
+    <!-- Visualization & Content Choices: 1. Marketplace Fees (Report Info) -> Goal: Compare -> Viz: Interactive Doughnut Chart (Chart.js) -> Interaction: Hover to see fee breakdown -> Justification: Visually impactful way to show how fees erode profit. 2. ROI with Analytics (Report Info) -> Goal: Inform -> Viz: Bar Chart (Chart.js) -> Interaction: Tooltips on bars show specific % increase -> Justification: Clearly quantifies the competitive advantage of data ownership. 3. Feature Comparison (Report Info) -> Goal: Compare -> Viz: Interactive HTML Table -> Interaction: JS toggles highlight key differences -> Justification: Direct, scannable comparison of platform capabilities. 4. Growth Potential (Report Info) -> Goal: Change -> Viz: Line Chart (Chart.js) -> Interaction: Hover over points to see growth drivers -> Justification: Illustrates the compounding asset value of SEO vs. paid ads. All text content is dynamically updated via JS to provide context for each visualization. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-link.active {
+            color: #D97706;
+            border-bottom-color: #D97706;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Own Your Digital Future</h1>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">An interactive guide for creators on why a dedicated website is the ultimate platform for selling digital products like your Womp creations.</p>
+        </header>
+
+        <nav class="flex justify-center border-b-2 border-gray-200 mb-12 space-x-4 sm:space-x-8">
+            <a class="nav-link text-gray-500 hover:text-gray-800 border-b-2 border-transparent hover:border-gray-400 py-3 px-2 text-sm sm:text-base font-medium active" data-target="overview">Overview</a>
+            <a class="nav-link text-gray-500 hover:text-gray-800 border-b-2 border-transparent hover:border-gray-400 py-3 px-2 text-sm sm:text-base font-medium" data-target="brand">Brand & Trust</a>
+            <a class="nav-link text-gray-500 hover:text-gray-800 border-b-2 border-transparent hover:border-gray-400 py-3 px-2 text-sm sm:text-base font-medium" data-target="finance">Financials</a>
+            <a class="nav-link text-gray-500 hover:text-gray-800 border-b-2 border-transparent hover:border-gray-400 py-3 px-2 text-sm sm:text-base font-medium" data-target="marketing">Marketing & SEO</a>
+            <a class="nav-link text-gray-500 hover:text-gray-800 border-b-2 border-transparent hover:border-gray-400 py-3 px-2 text-sm sm:text-base font-medium" data-target="engagement">Engagement</a>
+            <a class="nav-link text-gray-500 hover:text-gray-800 border-b-2 border-transparent hover:border-gray-400 py-3 px-2 text-sm sm:text-base font-medium" data-target="scalability">Scalability</a>
+            <a class="nav-link text-gray-500 hover:text-gray-800 border-b-2 border-transparent hover:border-gray-400 py-3 px-2 text-sm sm:text-base font-medium" data-target="data">Data & Edge</a>
+        </nav>
+
+        <main id="main-content">
+            <section id="overview" class="content-section active">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Marketplace vs. Your Own Website</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">While marketplaces offer a quick start, a dedicated website provides the control and profitability essential for long-term success. Explore the key differences below.</p>
+                </div>
+                <div class="overflow-x-auto bg-white rounded-lg shadow-md border border-gray-200">
+                    <table class="w-full text-sm text-left text-gray-600">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 font-semibold">Factor</th>
+                                <th scope="col" class="px-6 py-3 font-semibold">Selling on Marketplaces</th>
+                                <th scope="col" class="px-6 py-3 font-semibold">Selling on Your Own Website</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900">Brand Control</td>
+                                <td class="px-6 py-4">Limited by platform rules and templates.</td>
+                                <td class="px-6 py-4 font-medium text-amber-700">Full control over design, messaging, and user experience.</td>
+                            </tr>
+                            <tr class="bg-gray-50 border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900">Profit Margins</td>
+                                <td class="px-6 py-4">Lower due to fees and commissions (6-30%).</td>
+                                <td class="px-6 py-4 font-medium text-amber-700">Higher; only pay for hosting and payment processing.</td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900">Customer Data</td>
+                                <td class="px-6 py-4">No direct access to customer data or relationships.</td>
+                                <td class="px-6 py-4 font-medium text-amber-700">Full ownership to track behavior and build email lists.</td>
+                            </tr>
+                             <tr class="bg-gray-50 border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900">Traffic Generation</td>
+                                <td class="px-6 py-4">Instant access to a built-in audience.</td>
+                                <td class="px-6 py-4 font-medium text-amber-700">Requires effort (SEO, ads), but builds a long-term asset.</td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900">Scalability</td>
+                                <td class="px-6 py-4">Risky; subject to policy changes and competition.</td>
+                                <td class="px-6 py-4 font-medium text-amber-700">Highly scalable with full control over features and marketing.</td>
+                            </tr>
+                             <tr class="bg-gray-50">
+                                <td class="px-6 py-4 font-medium text-gray-900">Risk & Dependency</td>
+                                <td class="px-6 py-4">High dependency on a single platform's health and rules.</td>
+                                <td class="px-6 py-4 font-medium text-amber-700">Diversified, mitigated risk; you own the platform.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="brand" class="content-section">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-left">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Enhance Brand Control & Professional Image</h2>
+                        <p class="text-gray-600 mb-4">A dedicated website is your digital home. It allows you to build a unique brand identity, from the visual design to the user experience, that perfectly matches the aesthetic of your Womp creations. This control is vital for building trust and establishing authority in your niche.</p>
+                        <p class="text-gray-600">By showcasing testimonials, case studies, and a professional portfolio, you move beyond a simple product listing to create an immersive brand world. This fosters a deeper connection with your audience, turning customers into loyal fans.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="text-xl font-semibold text-center mb-4">Building Blocks of Trust</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="text-amber-600 font-bold mr-3 mt-1">&#10003;</span>
+                                <span><strong class="text-gray-800">Unique Identity:</strong> Full control over layout, colors, and messaging to reflect your brand's values.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-amber-600 font-bold mr-3 mt-1">&#10003;</span>
+                                <span><strong class="text-gray-800">Personalized Experience:</strong> Tailor content and recommendations to user behavior, increasing sales by an average of 20%.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-amber-600 font-bold mr-3 mt-1">&#10003;</span>
+                                <span><strong class="text-gray-800">Showcase Authority:</strong> Use blogs, portfolios, and case studies to demonstrate expertise and build credibility.</span>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-amber-600 font-bold mr-3 mt-1">&#10003;</span>
+                                <span><strong class="text-gray-800">Direct Trust Signals:</strong> Prominently display customer reviews and transparent policies to reduce purchase friction.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="finance" class="content-section">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-left">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Maximize Financial Returns</h2>
+                        <p class="text-gray-600 mb-4">The most direct benefit of your own website is keeping more of your revenue. By eliminating hefty marketplace commissions, you dramatically increase your profit margin on every single sale.</p>
+                        <p class="text-gray-600">Combined with the low overhead of digital products, this creates a powerful model for generating sustainable, passive income. You also gain the flexibility to implement diverse pricing models, from subscriptions to tiered packages, optimizing revenue for your entire product ecosystem.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="text-xl font-semibold text-center mb-4">Revenue from a $100 Sale</h3>
+                        <div class="chart-container">
+                            <canvas id="financeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="marketing" class="content-section">
+                 <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-left">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Superior Marketing & SEO</h2>
+                        <p class="text-gray-600 mb-4">A dedicated website is a powerful, long-term marketing asset. Through Search Engine Optimization (SEO), you can attract highly targeted organic traffic from users actively searching for products like yours. This is far more sustainable than relying on a marketplace's internal algorithm or paid ads.</p>
+                        <p class="text-gray-600">You can also leverage content marketing—like Womp design tutorials or blog posts—to build authority and attract your ideal audience. Owning your platform means you can build direct marketing channels, like an email list, giving you a direct line to your customers without an intermediary.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="text-xl font-semibold text-center mb-4">Growth Over Time: SEO vs. Ads</h3>
+                         <div class="chart-container">
+                            <canvas id="marketingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="engagement" class="content-section">
+                 <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-left">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Direct Customer Engagement</h2>
+                        <p class="text-gray-600 mb-4">Owning your website means you own your customer relationships. You can collect data to understand their needs, personalize their experience, and build a loyal community around your brand. This direct connection is something marketplaces simply cannot offer.</p>
+                        <p class="text-gray-600">By implementing feedback loops and exclusive member areas, you can turn customers into co-creators, involving them in your product development. This deep engagement fosters unparalleled loyalty and ensures your future products are exactly what your audience wants.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="text-xl font-semibold text-center mb-4">The Power of Personalization</h3>
+                        <div class="chart-container">
+                            <canvas id="engagementChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="scalability" class="content-section">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                     <div class="text-left">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Unrestricted Scalability & Flexibility</h2>
+                        <p class="text-gray-600 mb-4">Your business will grow, and your website can grow with it. Unlike marketplaces that lock you into specific formats, a dedicated site allows you to expand your offerings seamlessly. You can add online courses, membership sites, or exclusive content libraries to create multiple revenue streams.</p>
+                        <p class="text-gray-600">With full control over your technology stack, you can integrate advanced e-commerce tools, CRM systems, and automation workflows. This future-proofs your business, allowing you to adapt to new technologies and market trends without being dependent on a third-party's roadmap.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="text-xl font-semibold text-center mb-4">Building Your Product Ecosystem</h3>
+                        <ul class="space-y-3">
+                           <li class="flex items-center p-3 bg-gray-50 rounded-md">
+                                <span class="text-2xl mr-4">&#128187;</span>
+                                <div>
+                                    <strong class="text-gray-800">Core Digital Products</strong>
+                                    <p class="text-sm text-gray-600">Your primary Womp 3D models and assets.</p>
+                                </div>
+                            </li>
+                             <li class="flex items-center p-3 bg-gray-50 rounded-md">
+                                <span class="text-2xl mr-4">&#127891;</span>
+                                <div>
+                                    <strong class="text-gray-800">Online Courses & Tutorials</strong>
+                                    <p class="text-sm text-gray-600">Monetize your expertise with educational content.</p>
+                                </div>
+                            </li>
+                             <li class="flex items-center p-3 bg-gray-50 rounded-md">
+                                <span class="text-2xl mr-4">&#128101;</span>
+                                <div>
+                                    <strong class="text-gray-800">Membership Sites</strong>
+                                    <p class="text-sm text-gray-600">Offer exclusive access for recurring revenue.</p>
+                                </div>
+                            </li>
+                             <li class="flex items-center p-3 bg-gray-50 rounded-md">
+                                <span class="text-2xl mr-4">&#128221;</span>
+                                <div>
+                                    <strong class="text-gray-800">Monetized Blog</strong>
+                                    <p class="text-sm text-gray-600">Build authority and generate ad or affiliate revenue.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="data" class="content-section">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                     <div class="text-left">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Data-Driven Competitive Edge</h2>
+                        <p class="text-gray-600 mb-4">Data is the key to a competitive advantage. A dedicated website gives you access to comprehensive analytics about your visitors. You can understand how they find you, what they engage with, and where they drop off in the sales process.</p>
+                        <p class="text-gray-600">This insight allows you to continuously optimize your website and marketing funnels for better performance. Companies that leverage customer analytics report significantly higher ROI and profits, allowing you to make smarter, faster decisions than competitors who are flying blind on marketplaces.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                         <h3 class="text-xl font-semibold text-center mb-4">Advantage of Using Analytics</h3>
+                         <div class="chart-container">
+                            <canvas id="dataChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="text-center py-8 border-t border-gray-200 mt-16">
+        <p class="text-gray-500 text-sm">Interactive Report generated based on "The Strategic Imperative of a Dedicated Digital Product Website".</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            let activeChart = null;
+
+            const chartConfigs = {
+                finance: () => ({
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Your Revenue', 'Marketplace Fees (Avg. 18%)'],
+                        datasets: [{
+                            data: [82, 18],
+                            backgroundColor: ['#F59E0B', '#FDE68A'],
+                            borderColor: ['#FDFBF8'],
+                            borderWidth: 4,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    boxWidth: 12,
+                                    font: { size: 12 }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: $${context.raw}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }),
+                marketing: () => ({
+                    type: 'line',
+                    data: {
+                        labels: ['Month 1', 'Month 3', 'Month 6', 'Month 9', 'Month 12'],
+                        datasets: [{
+                            label: 'Website Traffic (SEO)',
+                            data: [100, 300, 700, 1500, 3000],
+                            borderColor: '#F59E0B',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }, {
+                            label: 'Marketplace (Stable)',
+                            data: [500, 550, 520, 580, 600],
+                            borderColor: '#9CA3AF',
+                            backgroundColor: 'rgba(156, 163, 175, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: { mode: 'index', intersect: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Monthly Visitors' } }
+                        }
+                    }
+                }),
+                engagement: () => ({
+                    type: 'bar',
+                    data: {
+                        labels: ['1st Visit', '5th Visit', '10th Visit'],
+                        datasets: [{
+                            label: 'Conversion Rate Increase (%)',
+                            data: [1, 500, 1800],
+                            backgroundColor: ['#FDE68A', '#FCD34D', '#F59E0B'],
+                            borderColor: '#D97706',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => `${context.raw}% increase from baseline`
+                                }
+                            }
+                        },
+                        scales: {
+                             x: { title: { display: true, text: 'Conversion Uplift' } }
+                        }
+                    }
+                }),
+                data: () => ({
+                    type: 'bar',
+                    data: {
+                        labels: ['Return on Investment (ROI)', 'Profitability'],
+                        datasets: [{
+                            label: 'Businesses Using Analytics',
+                            data: [115, 93],
+                            backgroundColor: '#F59E0B',
+                        }, {
+                            label: 'Businesses Not Using Analytics',
+                            data: [0, 0],
+                            backgroundColor: '#FDE68A',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => `${context.raw}% higher`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Relative Performance Increase (%)' }
+                            }
+                        }
+                    }
+                })
+            };
+
+            function renderChart(target) {
+                if (activeChart) {
+                    activeChart.destroy();
+                    activeChart = null;
+                }
+                if (chartConfigs[target]) {
+                    const canvasId = `${target}Chart`;
+                    const ctx = document.getElementById(canvasId);
+                    if (ctx) {
+                        activeChart = new Chart(ctx.getContext('2d'), chartConfigs[target]());
+                    }
+                }
+            }
+
+            function switchTab(targetId) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.target === targetId);
+                });
+                contentSections.forEach(section => {
+                    section.classList.toggle('active', section.id === targetId);
+                });
+                renderChart(targetId);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.target.dataset.target;
+                    switchTab(targetId);
+                });
+            });
+            
+            switchTab('overview');
+        });
+    </script>
+</body>
+</html>

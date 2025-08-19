@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Atelier - AI Forex Analysis</title>
+    <!-- Load custom fonts from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Load Chart.js for data visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Define the color scheme based on the wel.html file */
+        :root {
+            --primary-brand: #522888; /* Deep purple */
+            --secondary-brand: #BF9553; /* Warm gold */
+            --background-light: #FDFBF7; /* A warm off-white */
+            --text-dark: #4a4a4a; /* Dark text color */
+            --card-bg: #ffffff; /* White card background */
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --border-light: #e5e7eb;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+        }
+
+        .brand-gradient-text {
+            background: linear-gradient(90deg, var(--primary-brand), var(--secondary-brand));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px var(--shadow-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .analysis-panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px var(--shadow-light);
+            border: 1px solid var(--border-light);
+        }
+        
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px var(--shadow-light);
+            border: 1px solid var(--border-light);
+            height: 500px;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        select, input {
+            background: var(--background-light);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text-dark);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            flex: 1;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-brand);
+            box-shadow: 0 0 0 3px rgba(82, 40, 136, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(90deg, var(--primary-brand), var(--secondary-brand));
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(82, 40, 136, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .analysis-result {
+            background: var(--background-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-left: 4px solid var(--primary-brand);
+        }
+
+        .signal-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .signal-buy {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .signal-sell {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+
+        .signal-hold {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning-color);
+            border: 1px solid var(--warning-color);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 2px 6px var(--shadow-light);
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary-brand), var(--secondary-brand));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-label {
+            color: var(--text-dark);
+            opacity: 0.6;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .risk-assessment {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px var(--shadow-light);
+            border: 1px solid var(--border-light);
+            margin-top: 2rem;
+        }
+
+        .risk-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .risk-item:last-child {
+            border-bottom: none;
+        }
+
+        .risk-level {
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .risk-low {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+        }
+
+        .risk-medium {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning-color);
+        }
+
+        .risk-high {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+        }
+
+        .explanation-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: var(--background-light);
+            border-radius: 12px;
+            border-left: 4px solid var(--secondary-brand);
+        }
+
+        .explanation-item {
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+            border-left: 3px solid var(--primary-brand);
+        }
+
+        .explanation-item h4 {
+            color: var(--primary-brand);
+            margin-bottom: 0.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-dark);
+            opacity: 0.6;
+        }
+
+        .spinner {
+            border: 3px solid var(--border-light);
+            border-top: 3px solid var(--primary-brand);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 4px;
+            box-shadow: 0 2px 6px var(--shadow-light);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-dark);
+            opacity: 0.7;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .tab.active {
+            background: var(--primary-brand);
+            color: white;
+            opacity: 1;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="brand-gradient-text">Aurora Forex AI</h1>
+            <p>Professional forex analysis powered by artificial intelligence</p>
+        </div>
+
+        <div class="main-grid">
+            <div class="analysis-panel">
+                <h2>Analysis Parameters</h2>
+                
+                <div class="input-group">
+                    <label>Currency Pair</label>
+                    <select id="currencyPair">
+                        <option value="EURUSD">EUR/USD</option>
+                        <option value="GBPUSD">GBP/USD</option>
+                        <option value="USDJPY">USD/JPY</option>
+                        <option value="USDCHF">USD/CHF</option>
+                        <option value="AUDUSD">AUD/USD</option>
+                        <option value="USDCAD">USD/CAD</option>
+                        <option value="NZDUSD">NZD/USD</option>
+                        <option value="EURJPY">EUR/JPY</option>
+                        <option value="GBPJPY">GBP/JPY</option>
+                        <option value="EURGBP">EUR/GBP</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Timeframe</label>
+                    <select id="timeframe">
+                        <option value="1h">1 Hour</option>
+                        <option value="4h" selected>4 Hours</option>
+                        <option value="1d">Daily</option>
+                        <option value="1w">Weekly</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Risk Management</label>
+                    <div class="input-row">
+                        <input type="number" id="accountBalance" placeholder="Account Balance" value="10000">
+                        <input type="number" id="riskPercent" placeholder="Risk %" value="2" step="0.1">
+                    </div>
+                </div>
+
+                <button class="btn" onclick="analyzeForex()">
+                    <span id="analyzeText">Analyze Market</span>
+                </button>
+
+                <div id="quickMetrics" class="metrics-grid" style="display: none;">
+                    <div class="metric-card">
+                        <div class="metric-value" id="currentPrice">-</div>
+                        <div class="metric-label">Current Price</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="dailyChange">-</div>
+                        <div class="metric-label">24h Change</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="forexChart"></canvas>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('analysis')">Technical Analysis</button>
+            <button class="tab" onclick="switchTab('risk')">Risk Assessment</button>
+            <button class="tab" onclick="switchTab('education')">AI Explanations</button>
+        </div>
+
+        <div id="analysis" class="tab-content active">
+            <div id="analysisResults" style="display: none;">
+                <div class="analysis-result">
+                    <div id="signalBadge" class="signal-badge"></div>
+                    <h3>Market Analysis</h3>
+                    <div id="analysisText"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="risk" class="tab-content">
+            <div class="risk-assessment">
+                <h3>Risk Management Analysis</h3>
+                <div id="riskDetails">
+                    <div class="risk-item">
+                        <span>Position Size</span>
+                        <span id="positionSize">-</span>
+                    </div>
+                    <div class="risk-item">
+                        <span>Risk Amount</span>
+                        <span id="riskAmount">-</span>
+                    </div>
+                    <div class="risk-item">
+                        <span>Reward/Risk Ratio</span>
+                        <span id="rrRatio">-</span>
+                    </div>
+                    <div class="risk-item">
+                        <span>Volatility Level</span>
+                        <div id="volatilityLevel" class="risk-level">-</div>
+                    </div>
+                    <div class="risk-item">
+                        <span>Market Sentiment</span>
+                        <div id="marketSentiment" class="risk-level">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="education" class="tab-content">
+            <div class="explanation-section">
+                <h3>AI Learning Assistant</h3>
+                <div id="educationContent">
+                    <p style="color: var(--text-dark); opacity: 0.6;">Run an analysis to see detailed explanations of the trading signals and market conditions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let forexChart = null;
+
+        // Initialize the chart on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeChart();
+        });
+
+        /**
+         * Initializes the Chart.js line chart.
+         */
+        function initializeChart() {
+            const ctx = document.getElementById('forexChart').getContext('2d');
+            forexChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Price',
+                        data: [],
+                        borderColor: '#522888',
+                        backgroundColor: 'rgba(82, 40, 136, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#4a4a4a'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Generates mock forex data for the chart.
+         * @param {string} pair The currency pair string.
+         * @returns {{data: number[], labels: string[], currentPrice: number}} The generated data.
+         */
+        function generateMockData(pair) {
+            const data = [];
+            const labels = [];
+            const basePrice = getBasePriceForPair(pair);
+            let price = basePrice;
+            
+            for (let i = 0; i < 50; i++) {
+                const change = (Math.random() - 0.5) * (i < 25 ? 0.01 : 0.03); // Introduce some volatility
+                price += change;
+                data.push(price);
+                
+                const date = new Date();
+                date.setHours(date.getHours() - (50 - i));
+                labels.push(date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+            }
+            
+            return { data, labels, currentPrice: price };
+        }
+
+        /**
+         * Gets a base price for a given currency pair.
+         * @param {string} pair The currency pair string.
+         * @returns {number} The base price.
+         */
+        function getBasePriceForPair(pair) {
+            const basePrices = {
+                'EURUSD': 1.0850,
+                'GBPUSD': 1.2650,
+                'USDJPY': 148.50,
+                'USDCHF': 0.8950,
+                'AUDUSD': 0.6750,
+                'USDCAD': 1.3450,
+                'NZDUSD': 0.6150,
+                'EURJPY': 161.20,
+                'GBPJPY': 187.80,
+                'EURGBP': 0.8580
+            };
+            return basePrices[pair] || 1.0000;
+        }
+
+        /**
+         * Performs a mock technical analysis on the provided price data.
+         * @param {{data: number[], labels: string[], currentPrice: number}} data The price data.
+         * @param {string} pair The currency pair.
+         * @returns {object} An object with analysis results.
+         */
+        function performTechnicalAnalysis(data, pair) {
+            const prices = data.data;
+            const currentPrice = prices[prices.length - 1];
+            const previousPrice = prices[prices.length - 2] || prices[prices.length - 1];
+            const change = currentPrice - previousPrice;
+            const changePercent = (change / previousPrice * 100).toFixed(4);
+            
+            // Simple moving averages
+            const sma20 = calculateSMA(prices, 20);
+            const sma50 = calculateSMA(prices, 50);
+            
+            // RSI calculation
+            const rsi = calculateRSI(prices, 14);
+            
+            // Determine a simple signal based on indicators
+            let signal, signalStrength, signalClass;
+            
+            if (currentPrice > sma20 && rsi < 70 && sma20 > sma50) {
+                signal = 'BUY';
+                signalStrength = 'Strong';
+                signalClass = 'signal-buy';
+            } else if (currentPrice < sma20 && rsi > 30 && sma20 < sma50) {
+                signal = 'SELL';
+                signalStrength = 'Moderate';
+                signalClass = 'signal-sell';
+            } else {
+                signal = 'HOLD';
+                signalStrength = 'Weak';
+                signalClass = 'signal-hold';
+            }
+            
+            return {
+                signal,
+                signalStrength,
+                signalClass,
+                currentPrice: currentPrice.toFixed(5),
+                change: changePercent,
+                sma20: sma20.toFixed(5),
+                sma50: sma50.toFixed(5),
+                rsi: rsi.toFixed(1),
+                volatility: calculateVolatility(prices),
+                sentiment: Math.random() > 0.5 ? 'Bullish' : 'Bearish'
+            };
+        }
+
+        /**
+         * Calculates the Simple Moving Average (SMA).
+         * @param {number[]} prices The array of prices.
+         * @param {number} period The period for the SMA.
+         * @returns {number} The calculated SMA.
+         */
+        function calculateSMA(prices, period) {
+            if (prices.length < period) return prices[prices.length - 1];
+            const slice = prices.slice(-period);
+            return slice.reduce((sum, price) => sum + price, 0) / period;
+        }
+
+        /**
+         * Calculates the Relative Strength Index (RSI).
+         * @param {number[]} prices The array of prices.
+         * @param {number} period The period for the RSI.
+         * @returns {number} The calculated RSI.
+         */
+        function calculateRSI(prices, period) {
+            if (prices.length < period + 1) return 50;
+            
+            let gains = 0;
+            let losses = 0;
+            
+            for (let i = prices.length - period; i < prices.length; i++) {
+                const change = prices[i] - prices[i - 1];
+                if (change > 0) {
+                    gains += change;
+                } else {
+                    losses += Math.abs(change);
+                }
+            }
+            
+            const avgGain = gains / period;
+            const avgLoss = losses / period;
+            
+            // Handle division by zero
+            if (avgLoss === 0) return 100;
+            
+            const rs = avgGain / avgLoss;
+            return 100 - (100 / (1 + rs));
+        }
+
+        /**
+         * Calculates the volatility of the price data (standard deviation of returns).
+         * @param {number[]} prices The array of prices.
+         * @returns {number} The calculated volatility.
+         */
+        function calculateVolatility(prices) {
+            if (prices.length < 2) return 0;
+            
+            const returns = [];
+            for (let i = 1; i < prices.length; i++) {
+                returns.push((prices[i] - prices[i-1]) / prices[i-1]);
+            }
+            
+            const mean = returns.reduce((sum, ret) => sum + ret, 0) / returns.length;
+            const variance = returns.reduce((sum, ret) => sum + Math.pow(ret - mean, 2), 0) / returns.length;
+            return Math.sqrt(variance);
+        }
+
+        /**
+         * Main function to analyze the forex market.
+         * This function orchestrates the data generation, analysis, UI update, and AI call.
+         */
+        async function analyzeForex() {
+            showLoading(true);
+
+            // Get user inputs
+            const currencyPair = document.getElementById('currencyPair').value;
+            const timeframe = document.getElementById('timeframe').value;
+            const accountBalance = parseFloat(document.getElementById('accountBalance').value);
+            const riskPercent = parseFloat(document.getElementById('riskPercent').value);
+
+            // Mock data and analysis
+            const mockData = generateMockData(currencyPair);
+            const analysisResults = performTechnicalAnalysis(mockData, currencyPair);
+
+            // Update chart with mock data
+            forexChart.data.labels = mockData.labels;
+            forexChart.data.datasets[0].data = mockData.data;
+            forexChart.update();
+
+            // Update UI with technical analysis results
+            document.getElementById('currentPrice').textContent = analysisResults.currentPrice;
+            document.getElementById('dailyChange').textContent = `${analysisResults.change}%`;
+            document.getElementById('analysisText').innerHTML = `The AI is currently analyzing the market conditions for ${currencyPair}.`;
+            document.getElementById('quickMetrics').style.display = 'grid';
+            document.getElementById('analysisResults').style.display = 'block';
+
+            // Update signal badge
+            const signalBadge = document.getElementById('signalBadge');
+            signalBadge.textContent = analysisResults.signal;
+            signalBadge.className = `signal-badge ${analysisResults.signalClass}`;
+
+            // Update risk assessment
+            const riskAmount = (accountBalance * riskPercent / 100).toFixed(2);
+            const positionSize = (riskAmount / (analysisResults.volatility * 1000)).toFixed(2); // Example calculation
+            const rrRatio = (Math.random() * 5 + 1).toFixed(1); // Mock R/R ratio
+
+            document.getElementById('riskAmount').textContent = `$${riskAmount}`;
+            document.getElementById('positionSize').textContent = `${positionSize} Lots`;
+            document.getElementById('rrRatio').textContent = `${rrRatio}:1`;
+
+            // Update volatility and sentiment badges
+            const volatilityLevel = document.getElementById('volatilityLevel');
+            const sentimentLevel = document.getElementById('marketSentiment');
+
+            volatilityLevel.textContent = getVolatilityLevel(analysisResults.volatility);
+            volatilityLevel.className = `risk-level ${getVolatilityClass(analysisResults.volatility)}`;
+            sentimentLevel.textContent = analysisResults.sentiment;
+            sentimentLevel.className = `risk-level ${analysisResults.sentiment === 'Bullish' ? 'risk-low' : 'risk-medium'}`;
+
+            // Generate and display AI explanation
+            const prompt = `Based on the following market data, write a brief, professional-sounding forex analysis and an educational summary for a beginner. 
+            The analysis should explain the market signal and key factors in a clear, concise manner.
+            The educational summary should explain what the key indicators (SMA, RSI, Volatility, Sentiment) are.
+            
+            **Market Data:**
+            - Currency Pair: ${currencyPair}
+            - Timeframe: ${timeframe}
+            - Current Price: ${analysisResults.currentPrice}
+            - Signal: ${analysisResults.signal}
+            - Signal Strength: ${analysisResults.signalStrength}
+            - 20-period SMA: ${analysisResults.sma20}
+            - 50-period SMA: ${analysisResults.sma50}
+            - RSI: ${analysisResults.rsi}
+            - Volatility: ${analysisResults.volatility.toFixed(4)}
+            - Sentiment: ${analysisResults.sentiment}
+            
+            **Response structure:**
+            **Analysis:**
+            [Brief analysis of the current signal and market conditions]
+            
+            **Key Indicators Explained:**
+            [A bulleted or numbered list explaining each indicator simply.]
+            
+            Please use Markdown for formatting.`;
+
+            try {
+                const aiResponse = await generateAIAnalysis(prompt);
+                
+                // Update analysis text section
+                const [analysisSection, explanationSection] = aiResponse.split('**Key Indicators Explained:**');
+                
+                document.getElementById('analysisText').innerHTML = analysisSection.replace('**Analysis:**', '').trim();
+                
+                // Update education section
+                document.getElementById('educationContent').innerHTML = explanationSection.trim();
+
+            } catch (error) {
+                document.getElementById('analysisText').textContent = "Failed to fetch AI analysis. Please try again.";
+                document.getElementById('educationContent').textContent = "Failed to fetch AI explanation. Please try again.";
+                console.error("Error fetching AI analysis:", error);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        /**
+         * Helper function to determine volatility level string.
+         * @param {number} volatility The calculated volatility value.
+         * @returns {string} The volatility level ('Low', 'Medium', or 'High').
+         */
+        function getVolatilityLevel(volatility) {
+            if (volatility < 0.005) return 'Low';
+            if (volatility < 0.01) return 'Medium';
+            return 'High';
+        }
+
+        /**
+         * Helper function to determine volatility CSS class.
+         * @param {number} volatility The calculated volatility value.
+         * @returns {string} The CSS class name.
+         */
+        function getVolatilityClass(volatility) {
+            if (volatility < 0.005) return 'risk-low';
+            if (volatility < 0.01) return 'risk-medium';
+            return 'risk-high';
+        }
+
+        /**
+         * Generates AI analysis using the Gemini API.
+         * @param {string} prompt The prompt for the AI.
+         * @returns {Promise<string>} A promise that resolves to the AI-generated text.
+         */
+        async function generateAIAnalysis(prompt) {
+            const apiKey = "AIzaSyDhAPt8VUMAYkkYH9Rq-fpN7orOvvo23o8"; // Leave this as-is
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+
+            let retries = 0;
+            const maxRetries = 5;
+            const initialDelay = 1000; // 1 second
+
+            while (retries < maxRetries) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.status === 429) {
+                        // Too many requests, implement exponential backoff
+                        const delay = initialDelay * Math.pow(2, retries);
+                        console.log(`Rate limit exceeded. Retrying in ${delay / 1000}s...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        retries++;
+                        continue;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(`API response error: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        throw new Error("Invalid API response structure.");
+                    }
+                } catch (error) {
+                    if (retries === maxRetries - 1) {
+                        throw error;
+                    }
+                    retries++;
+                }
+            }
+        }
+
+        /**
+         * Toggles the loading state of the UI.
+         * @param {boolean} isLoading True to show loading, false to hide.
+         */
+        function showLoading(isLoading) {
+            const analyzeBtn = document.querySelector('.btn');
+            const analyzeText = document.getElementById('analyzeText');
+            analyzeBtn.disabled = isLoading;
+            if (isLoading) {
+                analyzeText.innerHTML = '<div class="spinner"></div> Analyzing...';
+            } else {
+                analyzeText.textContent = 'Analyze Market';
+            }
+        }
+
+        /**
+         * Switches the active tab content.
+         * @param {string} tabId The ID of the tab to activate.
+         */
+        function switchTab(tabId) {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>
