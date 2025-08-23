@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURORA ATELIER | Homepage</title>
+    <!-- Load Tailwind CSS for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load the brand's custom fonts from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs for a real-time database -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase configuration and initialization
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Sign in anonymously with the provided token or if not available
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                if (typeof __initial_auth_token !== 'undefined') {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (error) {
+                        console.error("Error signing in with custom token:", error);
+                        try {
+                           await signInAnonymously(auth);
+                        } catch (anonError) {
+                            console.error("Error signing in anonymously:", anonError);
+                        }
+                    }
+                } else {
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (anonError) {
+                        console.error("Error signing in anonymously:", anonError);
+                    }
+                }
+            }
+        });
+    </script>
+    <style>
+        /* Shared styles across all brand tools */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FDFBF7; /* A warm off-white from the brand palette */
+            color: #4a4a4a; /* The brand's dark text color */
+        }
+        h1, h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+        }
+        .brand-gradient-text {
+            /* Create a gradient text effect using the brand's colors */
+            background: linear-gradient(90deg, #522888, #BF9553);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- Header Section -->
+    <header class="text-center py-12 px-4">
+        <h1 class="text-5xl sm:text-7xl brand-gradient-text">AURORA ATELIER</h1>
+        <p class="mt-4 text-lg text-gray-600">Discover a suite of creative AI tools designed to inspire.</p>
+    </header>
+
+    <!-- Carousel Section -->
+    <div class="relative w-full max-w-4xl mx-auto overflow-hidden rounded-xl shadow-xl">
+        <div id="carousel" class="flex transition-transform duration-500 ease-in-out">
+            <!-- Carousel Item 1 -->
+            <div class="w-full flex-shrink-0 bg-white p-8">
+                <img src="https://placehold.co/800x400/522888/ffffff?text=Brand+Asset+Generator" alt="Brand Asset Generator" class="rounded-lg shadow-md mb-4 w-full">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold brand-gradient-text">AI Brand Asset Generator</h3>
+                    <p class="text-gray-700 mt-2">Generate brand assets and a brand guide from a simple text prompt.</p>
+                </div>
+            </div>
+            <!-- Carousel Item 2 -->
+            <div class="w-full flex-shrink-0 bg-white p-8">
+                <img src="https://placehold.co/800x400/BF9553/ffffff?text=Banner+Generator" alt="Banner Generator" class="rounded-lg shadow-md mb-4 w-full">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold brand-gradient-text">AURORA ATELIER Banner Generator</h3>
+                    <p class="text-gray-700 mt-2">Create stunning, custom banners for your website with AI.</p>
+                </div>
+            </div>
+            <!-- Carousel Item 3 -->
+            <div class="w-full flex-shrink-0 bg-white p-8">
+                <img src="https://placehold.co/800x400/522888/ffffff?text=Interactive+Report" alt="Interactive Report" class="rounded-lg shadow-md mb-4 w-full">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold brand-gradient-text">Interactive Banner Strategy Report</h3>
+                    <p class="text-gray-700 mt-2">Dive deep into the design and strategy behind your brand's visuals.</p>
+                </div>
+            </div>
+            <!-- Carousel Item 4 -->
+            <div class="w-full flex-shrink-0 bg-white p-8">
+                <img src="https://placehold.co/800x400/BF9553/ffffff?text=Forex+Analyzer" alt="Forex Trading Signal Analyzer" class="rounded-lg shadow-md mb-4 w-full">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold brand-gradient-text">AI Forex Trading Signal Analyzer</h3>
+                    <p class="text-gray-700 mt-2">Analyze forex charts with AI using professional trading strategies.</p>
+                </div>
+            </div>
+            <!-- New Carousel Item for Nicole Chat -->
+            <div class="w-full flex-shrink-0 bg-white p-8">
+                <img src="https://placehold.co/800x400/522888/ffffff?text=Nicole+Chat" alt="Nicole Chat" class="rounded-lg shadow-md mb-4 w-full">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold brand-gradient-text">Nicole Chat</h3>
+                    <p class="text-gray-700 mt-2">Get personalized mentoring in optometry from an AI-powered assistant.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Carousel Navigation -->
+        <button id="prevBtn" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-lg">
+            <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+        </button>
+        <button id="nextBtn" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-lg">
+            <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- New: Call-to-action button to navigate to the tools index -->
+    <div class="text-center mt-12">
+        <a href="Con.html" class="bg-[#522888] text-white font-bold py-4 px-10 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 hover:bg-[#754D9D]">
+            Explore All AI Tools
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const carousel = document.getElementById('carousel');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const totalSlides = carousel.children.length;
+            let currentIndex = 0;
+            let intervalId;
+
+            // Function to update the carousel position
+            const updateCarousel = () => {
+                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+            };
+
+            // Go to the next slide
+            const nextSlide = () => {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateCarousel();
+            };
+
+            // Go to the previous slide
+            const prevSlide = () => {
+                currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+                updateCarousel();
+            };
+
+            // Event listeners for navigation buttons
+            nextBtn.addEventListener('click', nextSlide);
+            prevBtn.addEventListener('click', prevSlide);
+
+            // Start auto-play
+            const startAutoPlay = () => {
+                intervalId = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+            };
+
+            // Stop auto-play when a user interacts with the carousel
+            const stopAutoPlay = () => {
+                clearInterval(intervalId);
+            };
+
+            // Start auto-play on page load
+            startAutoPlay();
+
+            // Pause auto-play on hover
+            carousel.addEventListener('mouseenter', stopAutoPlay);
+            carousel.addEventListener('mouseleave', startAutoPlay);
+        });
+    </script>
+</body>
+</html>
