@@ -853,8 +853,8 @@ Let’s make this a fun, insightful conversation that fuels their passion for op
                         }]
                     }
                 };
-                const apiKey = "AIzaSyDhAPt8VUMAYkkYH9Rq-fpN7orOvvo23o8";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const apiKey = "AIzaSyBm__6LZWMBSLdHJahuiqD-3zol6ANIFug";
+                const apiUrl = `generativelanguage.googleapis.com{apiKey}`; 
                 const result = await fetchWithExponentialBackoff(apiUrl, payload);
 
                 if (result && result.candidates && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
@@ -1014,4 +1014,5 @@ Let’s make this a fun, insightful conversation that fuels their passion for op
        
 
         
+
 
